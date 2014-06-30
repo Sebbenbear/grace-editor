@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Grace Editor</title>
+    <link rel="stylesheet" href="style/style.css">
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="ace/ace.js"></script>
+    <script src="scripts/minigrace.min.js"></script>
+    <script src="scripts/editor.js"></script>
+  </head>
+  <body>
+    <nav id="left-sidebar">
+      <div id="fold" class="button">
+        <div>&#8614;</div>
+      </div>
+      <div id="file-tree"></div>
+      <div id="upload" class="button" title="Upload">&#8623;</div>
+      <input id="upload-input" type="file">
+    </nav>
+    <template id="view-template">
+      <div class="view">
+        <header class="view-header">
+          <nav class="editor-buttons">
+            <div class="drop-editor button" title="Drop Editor">&#8855;</div>
+            <a class="download button" title="Download" download="new.grace" href="">↯</a>
+          </nav>
+          <div class="file-name"></div>
+        </header>
+        <div class="editor"></div>
+        <div class="execute">
+          <nav class="execute-buttons">
+            <div class="run button" title="Run">&#9654;</div>
+            <!--<div class="stop button" title="Stop">&#9632;</div>-->
+          </nav>
+          <div class="output"></div>
+        </div>
+      </div>
+    </template>
+    <section id="views">
+      <div id="add-editor" class="button" title="Add Editor">&#8853;</div>
+    </section>
+  </body>
+</html>
+

@@ -1,0 +1,275 @@
+template {
+  display: none;
+}
+
+html, body {
+  box-sizing: border-box;
+  height: 100%;
+}
+
+body {
+  display: -webkit-flex;
+  display: flex;
+
+  margin: 0px;
+  padding: 10px 20px 20px 0px;
+
+  color: white;
+  background-color: #474842;
+}
+
+body, input {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+  font-size: 10pt;
+}
+
+ul, ol {
+  list-style-type: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+.animated * {
+  transition: 0.3s linear;
+}
+
+.button {
+  -webkit-user-select: none;
+  user-select: none;
+
+  cursor: pointer;
+}
+
+#left-sidebar {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+
+#fold {
+  font-family: sans-serif;
+  text-align: center;
+
+  padding: 5px 15px;
+}
+
+#fold>div {
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+#left-sidebar.closed #fold>div {
+  -webkit-transform: rotate(0deg);
+  transform: rotate(180deg);
+}
+
+#fold:hover, #upload:hover {
+  background-color: #575852;
+}
+
+#file-tree {
+  -webkit-flex: auto;
+  flex: auto;
+
+  width: 180px;
+  min-height: 180px;
+
+  -webkit-user-select: none;
+  user-select: none;
+
+  overflow-x: hidden;
+  cursor: default;
+}
+
+#left-sidebar.closed #file-tree {
+  width: 0px;
+}
+
+.file-listing {
+  padding: 0px 10px;
+}
+
+#file-tree li {
+  margin: 5px 0px;
+}
+
+#file-tree .directory {
+  font-weight: bold;
+}
+
+.file {
+  position: relative;
+}
+
+#file-tree .file-name {
+  display: inline-block;
+  width: 140px;
+}
+
+.delete-file {
+  display: inline-block;
+  display: none;
+  position: absolute;
+  right: 0px;
+
+  color: #FF4A52;
+}
+
+#upload {
+  text-align: center;
+  font-size: 15pt;
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+#upload-input {
+  display: none;
+}
+
+#views {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex: 1;
+  flex: 1;
+  position: relative;
+}
+
+.view {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex: 1;
+  flex: 1;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+
+  vertical-align: top;
+  margin-right: 1px;
+}
+
+.view.hidden {
+  display: none;
+}
+
+.view-header {
+  position: relative;
+  -webkit-align-items: center;
+  align-items: center;
+
+  user-select: none;
+  padding: 5px 15px;
+
+  cursor: default;
+  -webkit-user-select: none;
+
+  text-align: center;
+}
+
+#add-editor, .editor-buttons {
+  position: absolute;
+  top: 0px;
+
+  font-size: 15pt;
+}
+
+.editor-buttons {
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  left: 5px;
+}
+
+.editor-buttons .button {
+  margin-right: 10px;
+}
+
+.drop-editor {
+  color: #FF4A52;
+}
+
+.file-name {
+  display: -webkit-inline-flex;
+  display: inline-flex;
+}
+
+.file-input {
+  color: white;
+}
+
+.view-header input {
+  padding: 0px;
+  margin: 0px;
+
+  background-color: transparent;
+  border: 0px;
+  text-align: center;
+}
+
+.editor {
+  -webkit-flex: 1;
+  flex: 1;
+
+  color: black;
+  font-size: 10pt;
+  width: 100%;
+}
+
+.execute {
+  display: inline-block;
+  background-color: #2F3129;
+}
+
+.execute-buttons {
+  padding: 5px 0px 10px 15px;
+
+  font-size: 15pt;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.run, .stop {
+  display: inline;
+}
+
+.run {
+  color: #A6E22E;
+  margin-right: 5px;
+}
+
+.stop, .execute.running .run {
+  color: #474842;
+  cursor: default;
+}
+
+.execute.running .stop {
+  color: #FF4A52;
+}
+
+.output {
+  background-color: #272822;
+  overflow: auto;
+  height: 150px;
+}
+
+.output p {
+  margin: 5px;
+}
+
+.output .error {
+  color: #FF4A52;
+}
+
+.output .trace {
+  color: #A7A8A2;
+  padding-left: 20px;
+}
+
+#add-editor {
+  right: 5px;
+  color: #A6E22E;
+}
+
