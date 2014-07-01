@@ -1,12 +1,15 @@
-/*globals $, Blob, FileReader, MiniGrace, URL*/
+/*globals $, Blob, FileReader, URL, minigrace*/
 /*globals ace, alert, confirm, document, localStorage, window*/
 
 "use strict";
 
-var asap, path;
+var asap, compiler, lines, path;
 
 asap = require("asap");
 path = require("path");
+
+compiler = require("./compiler");
+lines = require("./lines");
 
 $(function () {
   var MAX_VIEWS, adder, files, focused, last, template, views;
@@ -19,6 +22,10 @@ $(function () {
   adder = $("#add-editor");
   views = $("#views");
   template = $("#view-template");
+
+  function moduleName(name) {
+    return "gracecode_" + name.replace("/", "$")
+  }
 
   function indexOf(view) {
     var index = null;
@@ -41,12 +48,6 @@ $(function () {
     return views.children(".view").size();
   }
 
-  function newLine(text) {
-    var p = $("<p>");
-    p.text(text);
-    return p;
-  }
-
   function setDownload(download, text) {
     download.attr("href", URL.createObjectURL(new Blob([text], {
       type: "text/x-grace"
@@ -54,12 +55,18 @@ $(function () {
   }
 
   function bootEditor(view) {
-    var download, editor, element, index, session;
+    var download, editor, element, execute, loading, index, name, run, session, timer;
 
     element = view.children(".editor");
     download = view.find(".download");
+    name = view.find(".file-name");
+    run = view.find(".run");
+    loading = view.find(".loading");
+    execute = view.find(".execute");
     editor = ace.edit(element[0].id);
     index = count() - 1;
+
+    editor.task = null;
 
     editor.on("focus", function () {
       localStorage.focused = index;
@@ -85,17 +92,50 @@ $(function () {
     localStorage["editor:" + index] =
       localStorage["editor:" + index] || "temp:" + index;
 
-    session.on("change", function () {
-      var value = session.getValue();
+    function change() {
+      var local, value;
+
+      value = session.getValue();
 
       setDownload(download, value);
 
       localStorage[localStorage["editor:" + index]] = value;
 
+      run.hide();
+      loading.show();
+      execute.addClass("running");
       session.clearAnnotations();
 
-      // TODO Add annotation from compilation.
-    });
+      timer = setTimeout(function () {
+        var modname;
+
+        if (local !== timer) {
+          return;
+        }
+
+        modname = path.basename(name.text(), ".grace") || "editor" + index;
+        compiler.compile(modname, value, function (reason) {
+          if (reason !== null) {
+            session.setAnnotations([{
+              row: reason.line - 1,
+              column: reason.column - 1,
+              type: "error",
+              text: reason.message
+            }]);
+          } else {
+            execute.removeClass("running");
+          }
+
+          loading.hide();
+          run.show();
+        });
+      }, 1000);
+
+      local = timer;
+    }
+
+    editor.change = change;
+    editor.on("change", change);
 
     element[0].editor = editor;
 
@@ -127,21 +167,33 @@ $(function () {
   }
 
   function loadFileIn(name, editor) {
-    var index, view;
+    var current, index, view;
 
     view = editor.parent();
+    editor = editor[0].editor;
     index = indexOf(view);
 
+    current = localStorage["editor:" + index];
+
+    if (current.substring(0, 5) === "temp:" && editor.getValue() !== "") {
+      if (confirm("Save before closing?")) {
+        view.find(".file-name").data("loading", name).dblclick();
+        return;
+      }
+
+      localStorage.removeItem("temp:" + index);
+    }
+
     localStorage["editor:" + index] = "file:" + name;
-    localStorage.removeItem("temp:" + index);
 
     view.find(".file-name").text(name);
     view.find(".download").attr("download", name);
 
-    editor[0].editor.setValue(localStorage["file:" + name]);
-    editor[0].editor.clearSelection();
-    editor[0].editor.moveCursorTo(0, 0);
-    editor[0].editor.focus();
+    editor.setValue(localStorage["file:" + name]);
+    editor.clearSelection();
+    editor.moveCursorTo(0, 0);
+    editor.focus();
+    editor.change();
   }
 
   function loadFile(name) {
@@ -256,7 +308,7 @@ $(function () {
   }
 
   (function () {
-    var fileName, fold, foldTree, origWidth, sidebar, tree, unfoldTree;
+    var fileName, fold, foldTree, name, sidebar, tree, unfoldTree;
 
     sidebar = $("#left-sidebar");
     tree = $("#file-tree");
@@ -268,7 +320,10 @@ $(function () {
     for (fileName in localStorage) {
       if (localStorage.hasOwnProperty(fileName) &&
           fileName.substring(0, 5) === "file:") {
-        addFile(fileName.substring(5));
+        name = fileName.substring(5);
+        addFile(name);
+        name = path.basename(name, ".grace");
+        compiler.compile(name, localStorage[fileName]);
       }
     }
 
@@ -298,8 +353,6 @@ $(function () {
       }
     });
 
-    origWidth = tree.width();
-
     foldTree = function () {
       fold.unbind("click", foldTree).click(unfoldTree);
       localStorage.folded = true;
@@ -325,7 +378,8 @@ $(function () {
     }
 
     asap(function () {
-      $("#left-sidebar").addClass("animated");
+      fold.children().addClass("animated");
+      tree.addClass("animated");
     });
   }());
 
@@ -403,7 +457,7 @@ $(function () {
     $(this).append(input);
 
     function set() {
-      var file, old, value;
+      var load, file, old, value;
 
       value = path.basename($(this).val()
         .replace(/^\s+/, "").replace(/\s+$/, ""), ".grace");
@@ -411,7 +465,7 @@ $(function () {
       old = path.basename(name.text(), ".grace");
 
       if (value !== old) {
-        if (/^[\w\-]+$/.test(value)) {
+        if (/^[\w]+$/.test(value)) {
           value = value + ".grace";
           file = "file:" + value;
 
@@ -419,9 +473,9 @@ $(function () {
             alert("That name is already taken.");
           } else {
             old = localStorage["editor:" + indexOf(view)];
+            localStorage.removeItem(old);
 
             if (old.substring(0, 5) === "file:") {
-              localStorage.removeItem(old);
               $(document.getElementById(old)).remove();
             }
 
@@ -432,7 +486,7 @@ $(function () {
             addFile(value);
           }
         } else if (value !== "") {
-          alert("Only use letters, numbers, hyphens and underscores in a file name.");
+          alert("Only use letters, numbers, and underscores in a file name.");
           return;
         }
       }
@@ -442,6 +496,10 @@ $(function () {
 
       if (name.hasClass("closing")) {
         view.find(".drop-editor").click();
+      } else if (name.data("loading")) {
+        load = name.data("loading");
+        name.removeData("loading");
+        loadFileIn(load, view.children(".editor"));
       } else {
         editor.focus();
       }
@@ -457,13 +515,43 @@ $(function () {
   });
 
   views.on("click", ".run", function () {
-    var execute, output, value;
+    var editor, escaped, execute, modname, output, view;
 
-    execute = $(this).closest(".execute").addClass("running");
+    execute = $(this).closest(".execute");
     output = execute.children(".output").text("");
-    value = $(this).closest(".view").children(".editor")[0].editor.getValue();
+    view = $(this).closest(".view");
+    editor = view.children(".editor")[0].editor;
+    $(".view").each(function (index) {
+      if (this === view[0]) {
+        modname = path.basename(view.find(".file-name").text(), ".grace") ||
+          "editor" + index;
+      }
+    });
 
-    // TODO Run the code.
+    escaped = moduleName(modname);
+
+    global.gracecode_main = global[escaped];
+    global.theModule = global[escaped];
+
+    minigrace.lastSourceCode = editor.getValue();
+    minigrace.lastModname = modname;
+    minigrace.lastMode = "js";
+    minigrace.lastDebugMode = true;
+
+    minigrace.stdout_write = function (value) {
+      output.append(lines.newLine(value));
+    };
+
+    minigrace.stderr_write = function (value) {
+      output.append(lines.newError(value));
+    };
+
+    try {
+      minigrace.run();
+    } catch (error) {
+      output.append(lines.newError(error.toString()));
+      console.log(error.stack);
+    }
   });
 
   $("#upload").click(function () {

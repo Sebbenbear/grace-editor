@@ -9,6 +9,9 @@ html, body {
 
 body {
   display: -webkit-flex;
+  display: -o-flex;
+  display: -moz-flex;
+  display: -ms-flex;
   display: flex;
 
   margin: 0px;
@@ -34,12 +37,15 @@ a {
   text-decoration: inherit;
 }
 
-.animated * {
+.animated {
   transition: 0.3s linear;
 }
 
 .button {
   -webkit-user-select: none;
+  -o-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 
   cursor: pointer;
@@ -47,8 +53,14 @@ a {
 
 #left-sidebar {
   display: -webkit-flex;
+  display: -o-flex;
+  display: -moz-flex;
+  display: -ms-flex;
   display: flex;
   -webkit-flex-direction: column;
+  -o-flex-direction: column;
+  -moz-flex-direction: column;
+  -ms-flex-direction: column;
   flex-direction: column;
 }
 
@@ -60,13 +72,19 @@ a {
 }
 
 #fold>div {
-  -webkit-transform: rotate(180deg);
-  transform: rotate(180deg);
+  -webkit-transform: rotate(0.5turn);
+  -o-transform: rotate(0.5turn);
+  -moz-transform: rotate(0.5turn);
+  -ms-transform: rotate(0.5turn);
+  transform: rotate(0.5turn);
 }
 
 #left-sidebar.closed #fold>div {
-  -webkit-transform: rotate(0deg);
-  transform: rotate(180deg);
+  -webkit-transform: rotate(0turn);
+  -o-transform: rotate(0turn);
+  -moz-transform: rotate(0turn);
+  -ms-transform: rotate(0turn);
+  transform: rotate(0turn);
 }
 
 #fold:hover, #upload:hover {
@@ -75,12 +93,18 @@ a {
 
 #file-tree {
   -webkit-flex: auto;
+  -o-flex: auto;
+  -moz-flex: auto;
+  -ms-flex: auto;
   flex: auto;
 
   width: 180px;
   min-height: 180px;
 
   -webkit-user-select: none;
+  -o-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 
   overflow-x: hidden;
@@ -124,8 +148,11 @@ a {
 #upload {
   text-align: center;
   font-size: 15pt;
-  -webkit-transform: rotate(180deg);
-  transform: rotate(180deg);
+  -webkit-transform: rotate(0.5turn);
+  -o-transform: rotate(0.5turn);
+  -moz-transform: rotate(0.5turn);
+  -ms-transform: rotate(0.5turn);
+  transform: rotate(0.5turn);
 }
 
 #upload-input {
@@ -134,18 +161,33 @@ a {
 
 #views {
   display: -webkit-flex;
+  display: -o-flex;
+  display: -moz-flex;
+  display: -ms-flex;
   display: flex;
   -webkit-flex: 1;
+  -o-flex: 1;
+  -moz-flex: 1;
+  -ms-flex: 1;
   flex: 1;
   position: relative;
 }
 
 .view {
   display: -webkit-flex;
+  display: -o-flex;
+  display: -moz-flex;
+  display: -ms-flex;
   display: flex;
   -webkit-flex: 1;
+  -o-flex: 1;
+  -moz-flex: 1;
+  -ms-flex: 1;
   flex: 1;
   -webkit-flex-direction: column;
+  -o-flex-direction: column;
+  -moz-flex-direction: column;
+  -ms-flex-direction: column;
   flex-direction: column;
 
   vertical-align: top;
@@ -159,6 +201,9 @@ a {
 .view-header {
   position: relative;
   -webkit-align-items: center;
+  -o-align-items: center;
+  -moz-align-items: center;
+  -ms-align-items: center;
   align-items: center;
 
   user-select: none;
@@ -166,6 +211,9 @@ a {
 
   cursor: default;
   -webkit-user-select: none;
+  -o-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 
   text-align: center;
 }
@@ -178,13 +226,11 @@ a {
 }
 
 .editor-buttons {
-  display: -webkit-flex;
-  -webkit-flex-direction: row;
   left: 5px;
 }
 
 .editor-buttons .button {
-  margin-right: 10px;
+  display: inline-block;
 }
 
 .drop-editor {
@@ -193,6 +239,9 @@ a {
 
 .file-name {
   display: -webkit-inline-flex;
+  display: -o-inline-flex;
+  display: -moz-inline-flex;
+  display: -ms-inline-flex;
   display: inline-flex;
 }
 
@@ -211,6 +260,9 @@ a {
 
 .editor {
   -webkit-flex: 1;
+  -o-flex: 1;
+  -moz-flex: 1;
+  -ms-flex: 1;
   flex: 1;
 
   color: black;
@@ -224,10 +276,19 @@ a {
 }
 
 .execute-buttons {
+  display: -webkit-flex;
+  -webkit-flex-direction: row;
+  -webkit-flex-align-items: baseline;
+
+  box-sizing: border-box;
+  height: 45px;
   padding: 5px 0px 10px 15px;
 
   font-size: 15pt;
   -webkit-user-select: none;
+  -o-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 
@@ -243,6 +304,10 @@ a {
 .stop, .execute.running .run {
   color: #474842;
   cursor: default;
+}
+
+.loading {
+  display: none;
 }
 
 .execute.running .stop {
@@ -271,5 +336,9 @@ a {
 #add-editor {
   right: 5px;
   color: #A6E22E;
+}
+
+#shimmed {
+  display: none;
 }
 
